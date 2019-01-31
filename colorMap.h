@@ -31,6 +31,7 @@ namespace map_color_eric
 		bool get_score(std::string directory_name, int& score);
 		bool get_score_internal(std::string results_file, int& score);
 		cv::Point get_circle_center(int x, int y);
+		cv::Scalar get_color(int rating, int max_rating);
 	
 		std::string map_path;
 		std::string results_path;

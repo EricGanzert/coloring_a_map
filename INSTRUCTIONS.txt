@@ -1,0 +1,25 @@
+HOW TO BUILD (Linux environment):
+
+1) Open a terminal and navigate to color_map directory
+2) In color_map directory make a directory called build: "mkdir build"
+3) Inside build directory enter: "cmake .."
+4) Enter: "make"
+5) To run the program enter "./color-map path_to_the_results path_to_map_img"
+
+requires that cmake and gcc/g++ is installed
+cmake version >= 2.8
+settings in CMakeLists.txt: -std=c++11 -g -Wall -O0
+
+
+HOW TO USE:
+
+-first run the lot_sweep.js script to generate the results contained in a directory
+
+-prepare a .jpg or .png image of the lot being tested. The area should match "lot_corners.json"
+
+-run the program as described above. The first command line argument is the path
+to the folder containing all the results sub-folders. Second command line argument is the path to the map image.
+
+-there is some manually made sample data available in the repository
+
+

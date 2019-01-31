@@ -4,6 +4,9 @@ using namespace cv;
 
 namespace map_color_eric
 {
+	const int MAX_CAMERA_RATING = 7;
+	const int MARKER_RADIUS = 8; //pixels
+	
 	MapColor::MapColor()
 		: results_path("no results directory"), map_path("no map img filepath"), max_x(0), max_y(0)
 	{
@@ -178,16 +181,22 @@ namespace map_color_eric
 		int size_x = map.cols;
 		int size_y = map.rows;
 		
-		cout << "picture size(x,y): (" << size_x << ", " << size_y << ")\n";
-		cout << "coordinate max(x,y): (" << max_x << ", " << max_y << ")\n";
+		//cout << "picture size(x,y): (" << size_x << ", " << size_y << ")\n";
+		//cout << "coordinate max(x,y): (" << max_x << ", " << max_y << ")\n";
 		
 		std::map<std::pair<int,int>, int>::iterator it;
 		for (it=results.begin(); it != results.end(); ++it)
 		{
-			cout << "coordinate(x,y): (" << it->first.first << ", " << it->first.second << ") : score " << it->second << "\n";
+			//cout << "coordinate(x,y): (" << it->first.first << ", " << it->first.second << ") : score " << it->second << "\n";
 			Point p = get_circle_center(it->first.first, it->first.second);
-			cout << "point for circle(x,y): (" << p.x << ", " << p.y << ")\n\n";
+			//cout << "point for circle(x,y): (" << p.x << ", " << p.y << ")\n\n";
+			Scalar color = get_color(it->second, MAX_CAMERA_RATING);
+			
+			circle(map, p, MARKER_RADIUS, color, -1);
 		}
+		//imshow("marked map", map);
+		//waitKey(0);
+		imwrite("../marked_map.jpg", map);
 	}
 	
 	cv::Point MapColor::get_circle_center(int x, int y)
@@ -203,6 +212,34 @@ namespace map_color_eric
 		else
 			p.y = floor((y/static_cast<double>(max_y))*map.rows);
 		
+		p.y = map.rows - p.y;
+		
+		if (p.x < MARKER_RADIUS)
+		{
+			p.x += (MARKER_RADIUS-p.x);
+		}
+		else if (p.x > (map.cols-MARKER_RADIUS))
+		{
+			p.x -= p.x - (map.cols-MARKER_RADIUS);
+		}
+		
+		if (p.y < MARKER_RADIUS)
+		{
+			p.y += (MARKER_RADIUS-p.y);
+		}
+		else if (p.y > (map.rows-MARKER_RADIUS))
+		{
+			p.y -= p.y - (map.rows-MARKER_RADIUS);
+		}
+		
 		return p;
+	}
+	
+	Scalar MapColor::get_color(int rating, int max_rating)
+	{
+		double fraction = static_cast<double>(rating) / static_cast<double>(max_rating);
+		int green = 255*fraction;
+		int red = 255*(1-fraction);
+		return Scalar(0,green,red);
 	}
 }
