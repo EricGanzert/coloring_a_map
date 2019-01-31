@@ -30,6 +30,7 @@ namespace map_color_eric
 		bool is_test_dir(std::string directory_name, std::pair<int,int>& coordinates);
 		bool get_score(std::string directory_name, int& score);
 		bool get_score_internal(std::string results_file, int& score);
+		cv::Point get_circle_center(int x, int y);
 	
 		std::string map_path;
 		std::string results_path;

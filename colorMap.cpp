@@ -130,7 +130,7 @@ namespace map_color_eric
 			while( entry = readdir(dir_ptr) )
 			{
 				string filename = entry->d_name;
-				cout << filename << "\n";
+				//cout << filename << "\n";
 				if (filename.find("result") != string::npos)
 				{
 					string results_file = directory_name + "/" + filename;
@@ -143,27 +143,29 @@ namespace map_color_eric
 	
 	bool MapColor::get_score_internal(string results_file, int& score)
 	{
+		//cout << "getting score from " << results_file << "\n";
 		ifstream ins;
 		ins.open(results_file);
 		if (ins.fail())
 		{
+			cout << "cant open stream\n";
 			return false;
 		}
 		string line;
 		while(getline(ins,line))
 		{
-			if (line.find("result") != string::npos)
+			if (line.find("rating") != string::npos)
 			{
 				string score_str;
 				for (int i=0;i<line.length();i++)
 				{
-					if (isdigit(line[i]))
+					if (isdigit(line[i]) || line[i] == '-' )
 					{
 						score_str += line[i];
 					}
 				}
 				score = stoi(score_str);
-				cout << "score is " << score << "\n";
+				//cout << "score is " << score << "\n";
 				return true;
 			}
 		}
@@ -178,5 +180,29 @@ namespace map_color_eric
 		
 		cout << "picture size(x,y): (" << size_x << ", " << size_y << ")\n";
 		cout << "coordinate max(x,y): (" << max_x << ", " << max_y << ")\n";
+		
+		std::map<std::pair<int,int>, int>::iterator it;
+		for (it=results.begin(); it != results.end(); ++it)
+		{
+			cout << "coordinate(x,y): (" << it->first.first << ", " << it->first.second << ") : score " << it->second << "\n";
+			Point p = get_circle_center(it->first.first, it->first.second);
+			cout << "point for circle(x,y): (" << p.x << ", " << p.y << ")\n\n";
+		}
+	}
+	
+	cv::Point MapColor::get_circle_center(int x, int y)
+	{
+		cv::Point p;
+		if (max_x == 0)
+			p.x = 0;
+		else
+			p.x = floor((x/static_cast<double>(max_x))*map.cols);
+		
+		if (max_y == 0)
+			p.y = 0;
+		else
+			p.y = floor((y/static_cast<double>(max_y))*map.rows);
+		
+		return p;
 	}
 }
